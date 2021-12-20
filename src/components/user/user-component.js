@@ -267,7 +267,8 @@ class UserComponent extends React.Component{
 
         this.state = {
             user_id: null,
-            socket: null
+            socket: null,
+            updateInfo: true
         }
     }
 
@@ -289,14 +290,17 @@ class UserComponent extends React.Component{
 
         socket.on("start", () => {
             this.props.start();
+            this.setState({updateInfo: true});
         });
 
         socket.on("end", () => {
             this.props.end();
+            this.setState({updateInfo: true});
         });
 
         socket.on("change", (data) => {
             this.props.changePrice(data.stocks);
+            this.setState({updateInfo: true});
         });
 
         socket.on("sell", (data) => {

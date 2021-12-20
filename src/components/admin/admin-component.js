@@ -82,7 +82,8 @@ class AdminComponent extends React.Component {
 
         this.state = {
             socket: null,
-            stockPriceChangeType: 0
+            stockPriceChangeType: 0,
+            updateInfo: true
         }
 
         this.onStartExchangeClick = this.onStartExchangeClick.bind(this);
@@ -107,26 +108,32 @@ class AdminComponent extends React.Component {
 
         socket.on("start", () => {
             this.props.start();
+            this.setState({updateInfo: true});
         });
 
         socket.on("end", () => {
             this.props.end();
+            this.setState({updateInfo: true});
         });
 
         socket.on("change", (data) => {
             this.props.changePrice(data.stocks);
+            this.setState({updateInfo: true});
         });
 
         socket.on("sell", (data) => {
             this.props.sellStock(data.sellInfo);
+            this.setState({updateInfo: true});
         });
 
         socket.on("buy", (data) => {
             this.props.buyStock(data.transaction);
+            this.setState({updateInfo: true});
         });
 
         socket.on("notsell", (data) => {
             this.props.cancelSell(data.notsellInfo);
+            this.setState({updateInfo: true});
         });
     }
 
