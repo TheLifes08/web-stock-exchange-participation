@@ -1,0 +1,9 @@
+const SET = 'SET_STATE';
+const INIT = 'INIT_STATE';
+const BUY = 'BUY_STOCK';
+const SELL = 'SELL_STOCK';
+const NOTSELL = 'CANCEL_SELL';
+const START = 'START_EXCHANGE';
+const END = 'END_EXCHANGE';
+const CHANGE = 'CHANGE_PRICE';
+module.exports = {SET, INIT, BUY, SELL, NOTSELL, START, END, CHANGE};

@@ -1,0 +1,37 @@
+{
+  "name": "web-stock-exchange-participation",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@fontsource/roboto": "^4.5.1",
+    "@mui/material": "^5.2.4",
+    "immutable": "^4.0.0",
+    "jquery": "^3.6.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.6",
+    "react-router-dom": "^6.2.1",
+    "react-scripts": "^5.0.0",
+    "redux": "^4.1.2"
+  },
+  "scripts": {
+    "start": "PORT=5020 react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
