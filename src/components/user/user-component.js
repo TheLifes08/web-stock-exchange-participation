@@ -31,22 +31,22 @@ class StockRow extends React.Component {
     }
 
     onSellClick(value) {
-        this.setState({count : value});
+        this.setState({ count: value });
         this.props.onSell(this.props.id, value);
     }
 
     onNotsellClick(value) {
-        this.setState({count : value});
+        this.setState({ count: value });
         this.props.onNotsell(this.props.id, value);
     }
 
     onBuyClick(value) {
-        this.setState({count : value});
+        this.setState({ count: value });
         this.props.onBuy(this.props.id, value, this.props.owner_id)
     }
 
-    onCountChange(e) {
-        this.setState({count: parseInt(e.target.value)});
+    onCountChange(event) {
+        this.setState({ count: parseInt(event.target.value) });
     }
 
     render() {
@@ -57,6 +57,7 @@ class StockRow extends React.Component {
                         <TableCell align="center">{this.props.name}</TableCell>
                         <TableCell align="center">{this.props.price}</TableCell>
                         <TableCell align="center">{this.props.count}</TableCell>
+                        <TableCell align="center">{this.props.owner_name}</TableCell>
                         <TableCell align="center">
                             <SellDialog onSellClick={this.onSellClick} max={this.props.count}/>
                         </TableCell>
@@ -68,6 +69,7 @@ class StockRow extends React.Component {
                         <TableCell align="center">{this.props.name}</TableCell>
                         <TableCell align="center">{this.props.price}</TableCell>
                         <TableCell align="center">{this.props.count}</TableCell>
+                        <TableCell align="center">{this.props.owner_name}</TableCell>
                         <TableCell align="center">
                             <CancelSellDialog onNotsellClick={this.onNotsellClick} max={this.props.count}/>
                         </TableCell>
@@ -79,11 +81,15 @@ class StockRow extends React.Component {
                         <TableCell align="center">{this.props.name}</TableCell>
                         <TableCell align="center">{this.props.price}</TableCell>
                         <TableCell align="center">{this.props.count}</TableCell>
-                        <TableCell align="center">{(this.props.owner_name) ? this.props.owner_name : this.props.name}</TableCell>
+                        <TableCell align="center">{(this.props.owner_name)? this.props.owner_name : this.props.name}</TableCell>
                         <TableCell align="center">
                             <BuyDialog onBuyClick={this.onBuyClick} max={this.props.count}/>
                         </TableCell>
                     </TableRow>
+                );
+            default:
+                return (
+                    ""
                 );
         }
     }
@@ -96,22 +102,23 @@ class StocksTable extends React.Component {
 
     render() {
         if (this.props.stocks != null && this.props.stocks.length > 0) {
+            console.log(this.props)
             return (
                 <TableContainer component={Paper}>
-                    <Table className="table-class" sx={{ minWidth: 650 }} size="small" aria-label="simple table">
-                        <TableHead>
+                    <Table className="table-class" sx={{ border: 1, minWidth: 650 }} size="small" aria-label="simple table">
+                        <TableHead sx={{ backgroundColor: "#3d93f5" }}>
                             <TableRow>
                                 <TableCell align="center">Название</TableCell>
                                 <TableCell align="center">Цена</TableCell>
                                 <TableCell align="center">Количество</TableCell>
-                                {(this.props.type === "buy")? <TableCell align="center">Продавец</TableCell> : ""}
-                                <TableCell align="center"></TableCell>
+                                <TableCell align="center">{ (this.props.type === "buy")? "Продавец" : "Владелец" }</TableCell>
+                                <TableCell align="center"/>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {
                                 this.props.stocks.map((stock) => {
-                                    return <StockRow price={this.props.allstocks[stock.id].startingPrice} name={stock.name} count={stock.count} type={this.props.type} key={stock.owner_id + "." + stock.id} id={stock.id} onSell={this.props.onSell} onNotsell={this.props.onNotsell} onBuy={this.props.onBuy} owner_id={stock.owner_id} owner_name={stock.owner_name}/>
+                                    return <StockRow price={this.props.allstocks[stock.id].startingPrice} name={stock.name} count={stock.count} type={this.props.type} key={stock.owner_id + "." + stock.id} id={stock.id} owner_id={stock.owner_id} owner_name={stock.owner_name} onSell={this.props.onSell} onNotsell={this.props.onNotsell} onBuy={this.props.onBuy}/>
                                 })
                             }
                         </TableBody>
@@ -154,12 +161,13 @@ class StocksForBuying extends React.Component {
                 }
             }
         }
+
         return stocks;
     }
 
     render() {
         return (
-            <Container maxWidth="xl" hidden={!this.props.settings || this.props.settings.state !== "in"}>
+            <Container maxWidth="xl" sx={{ display: (!(this.props.settings) || this.props.settings.state !== "in")? "none" : "block" }}>
                 <Stack spacing={2}>
                     <Typography mt={6} align="center" component="h4" variant="h4">
                         Доступные для покупки акции
@@ -167,7 +175,7 @@ class StocksForBuying extends React.Component {
                     <StocksTable type={"buy"} stocks={this.getStocks()} onBuy={this.props.onBuy} allstocks={this.props.stocks}/>
                 </Stack>
             </Container>
-            );
+        );
     }
 }
 
@@ -183,10 +191,12 @@ class OwnStocksOnSaleComponent extends React.Component {
                     <Typography mt={6} align="center" component="h4" variant="h4">
                         Акции, выставленные на продажу
                     </Typography>
-                    <StocksTable type={"sell"} stocks={this.props.user && this.props.stocks ? this.props.user.selling_stocks.filter((stock) => stock.count > 0).map((stock) => {
+                    <StocksTable type={"sell"} stocks={(this.props.user && this.props.stocks)? this.props.user.selling_stocks.filter((stock) => stock.count > 0).map((stock) => {
                         stock.name = this.props.stocks[stock.id].name;
+                        stock.owner_id = this.props.user.id;
+                        stock.owner_name = this.props.user.name;
                         return stock;
-                    }): null} onNotsell={this.props.onNotsell} allstocks={this.props.stocks}/>
+                    }) : null} onNotsell={this.props.onNotsell} allstocks={this.props.stocks}/>
                 </Stack>
             </Container>
         );
@@ -205,8 +215,10 @@ class OwnStocksComponent extends React.Component {
                     <Typography mt={6} align="center" component="h4" variant="h4">
                         Купленные акции
                     </Typography>
-                    <StocksTable type="own" stocks={this.props.user && this.props.stocks ? this.props.user.stocks.filter((stock) => stock.count > 0).map((stock) => {
+                    <StocksTable type="own" stocks={(this.props.user && this.props.stocks)? this.props.user.stocks.filter((stock) => stock.count > 0).map((stock) => {
                         stock.name = this.props.stocks[stock.id].name;
+                        stock.owner_id = this.props.user.id;
+                        stock.owner_name = this.props.user.name;
                         return stock;
                     }): null} onSell={this.props.onSell} allstocks={this.props.stocks}/>
                 </Stack>
@@ -236,6 +248,9 @@ class StatusComponent extends React.Component {
                     Цена меняется каждые {(this.props.settings) ? this.props.settings.interval : 0} секунд
                 </Typography>
                 <Typography mt={2} align="center" component="p" variant="p">
+                    Дата начала аукциона: {(this.props.settings) ? this.props.settings.datetimeStart.replace("T", " ") : ""}
+                </Typography>
+                <Typography mt={2} align="center" component="p" variant="p">
                     Дата окончания аукциона: {(this.props.settings) ? this.props.settings.datetimeEnd.replace("T", " ") : ""}
                 </Typography>
             </Stack>
@@ -259,9 +274,9 @@ class UserComponent extends React.Component{
     componentDidMount() {
         const splitUrl = window.location.href.split("/");
         const userId = parseInt(splitUrl[splitUrl.length - 1]);
+        this.setState({user_id: userId});
 
         $.get("http://localhost:5010/storage/", (data) => {
-            this.setState({user_id: userId});
             this.props.initState({
                 users: data.state.brokers,
                 stocks: data.state.stocks,
@@ -274,17 +289,14 @@ class UserComponent extends React.Component{
 
         socket.on("start", () => {
             this.props.start();
-            this.setState({user_id: this.state.user_id});
         });
 
         socket.on("end", () => {
             this.props.end();
-            this.setState({forNew: 1});
         });
 
         socket.on("change", (data) => {
             this.props.changePrice(data.stocks);
-            this.setState({forNew: 1});
         });
 
         socket.on("sell", (data) => {
@@ -324,7 +336,6 @@ class UserComponent extends React.Component{
             stock_id: stock_id,
             count: count
         }
-
         this.state.socket.emit("notsell", {notsellInfo: notsellInfo});
     }
 
@@ -336,7 +347,6 @@ class UserComponent extends React.Component{
             count: count,
             price: this.props.stocks[stock_id].startingPrice
         };
-
         this.state.socket.emit("buy", {transaction: transaction});
     }
 
@@ -347,10 +357,10 @@ class UserComponent extends React.Component{
                     <Typography mt={2} align="center" component="h2" variant="h5">
                         Биржа акций - Покупка акций
                     </Typography>
-                    <StatusComponent settings={this.props.settings} user={this.props.users ? this.props.users[this.state.user_id] : null}/>
-                    <OwnStocksComponent settings={this.props.settings} stocks={this.props.stocks} user={this.props.users ? this.props.users[this.state.user_id] : null} onSell={this.onSellStock}/>
-                    <OwnStocksOnSaleComponent settings={this.props.settings} stocks={this.props.stocks} user={this.props.users ? this.props.users[this.state.user_id] : null} onNotsell={this.onCancelSellStock}/>
-                    <StocksForBuying settings={this.props.settings} users={this.props.users} stocks={this.props.stocks} user={this.props.users ? this.props.users[this.state.user_id] : null} onBuy={this.onBuyStock}/>
+                    <StatusComponent settings={this.props.settings} user={(this.props.users) ? this.props.users[this.state.user_id] : null}/>
+                    <OwnStocksComponent settings={this.props.settings} stocks={this.props.stocks} user={(this.props.users) ? this.props.users[this.state.user_id] : null} onSell={this.onSellStock}/>
+                    <OwnStocksOnSaleComponent settings={this.props.settings} stocks={this.props.stocks} user={(this.props.users) ? this.props.users[this.state.user_id] : null} onNotsell={this.onCancelSellStock}/>
+                    <StocksForBuying settings={this.props.settings} users={this.props.users} stocks={this.props.stocks} user={(this.props.users) ? this.props.users[this.state.user_id] : null} onBuy={this.onBuyStock}/>
                 </Stack>
             </Container>
         );

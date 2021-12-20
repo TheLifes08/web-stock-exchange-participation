@@ -19,7 +19,7 @@ store.dispatch({
   state: {
     users: null,
     settings: null,
-    shares: null
+    stocks: null
   }
 })
 

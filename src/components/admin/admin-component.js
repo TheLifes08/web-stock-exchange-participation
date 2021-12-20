@@ -1,7 +1,6 @@
 import React from "react";
 import {
     Button,
-    ButtonGroup,
     Container, Paper,
     Stack,
     Table,
@@ -22,19 +21,19 @@ class UserRow extends React.Component {
     render() {
         return (
             <TableRow key={this.props.user.id}>
-                <TableCell>{this.props.user.id}</TableCell>
-                <TableCell>{this.props.user.name}</TableCell>
-                <TableCell>{this.props.user.login}</TableCell>
-                <TableCell>{this.props.user.balance}</TableCell>
-                <TableCell>{this.props.user.earn}</TableCell>
-                <TableCell>{this.props.user.waste}</TableCell>
-                <TableCell>{
+                <TableCell align="center">{this.props.user.id}</TableCell>
+                <TableCell align="center">{this.props.user.name}</TableCell>
+                <TableCell align="center">{this.props.user.login}</TableCell>
+                <TableCell align="center">{this.props.user.balance}</TableCell>
+                <TableCell align="center">{this.props.user.earn}</TableCell>
+                <TableCell align="center">{this.props.user.waste}</TableCell>
+                <TableCell align="center">{
                     this.props.user.stocks.filter((stock) => stock.count > 0).map((stock) => {
                         return <div key={"" + this.props.user.id + "|" + stock.id + "b"}>
                             {this.props.stocks[stock.id].name} ({stock.count} шт.)</div>;
                     })
                 }</TableCell>
-                <TableCell>{
+                <TableCell align="center">{
                     this.props.user.selling_stocks.filter((stock) => stock.count > 0).map((stock) => {
                         return <div key={"" + this.props.user.id + "|" + stock.id + "s"}>
                             {this.props.stocks[stock.id].name} ({stock.count} шт.)</div>;
@@ -53,23 +52,23 @@ class UsersTable extends React.Component {
     render() {
         return (
             <TableContainer component={Paper}>
-                <Table className="table-class"  sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
+                <Table className="table-class"  sx={{ border: 1, minWidth: 650 }} aria-label="simple table">
+                    <TableHead sx={{ backgroundColor: "#3d93f5" }}>
                         <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Участник</TableCell>
-                            <TableCell>Логин</TableCell>
-                            <TableCell>Баланс</TableCell>
-                            <TableCell>Получено</TableCell>
-                            <TableCell>Потрачено</TableCell>
-                            <TableCell>Купленные акции</TableCell>
-                            <TableCell>Акции, выставленные на продажу</TableCell>
+                            <TableCell align="center">ID</TableCell>
+                            <TableCell align="center">Участник</TableCell>
+                            <TableCell align="center">Логин</TableCell>
+                            <TableCell align="center">Баланс</TableCell>
+                            <TableCell align="center">Получено</TableCell>
+                            <TableCell align="center">Потрачено</TableCell>
+                            <TableCell align="center">Купленные акции</TableCell>
+                            <TableCell align="center">Акции, выставленные на продажу</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {(this.props.users)? this.props.users.map((user) => {
                             return <UserRow key={user.id} user={user} stocks={this.props.stocks}/>;
-                        }) : <TableRow key="none"></TableRow>}
+                        }) : ""}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -82,7 +81,6 @@ class AdminComponent extends React.Component {
         super(props);
 
         this.state = {
-            forNew: 1,
             socket: null,
             stockPriceChangeType: 0
         }
@@ -109,32 +107,26 @@ class AdminComponent extends React.Component {
 
         socket.on("start", () => {
             this.props.start();
-            this.setState({forNew: 1});
         });
 
         socket.on("end", () => {
             this.props.end();
-            this.setState({forNew: 1});
         });
 
         socket.on("change", (data) => {
             this.props.changePrice(data.stocks);
-            this.setState({forNew: 1});
         });
 
         socket.on("sell", (data) => {
             this.props.sellStock(data.sellInfo);
-            this.setState({user_id: this.state.user_id});
         });
 
         socket.on("buy", (data) => {
             this.props.buyStock(data.transaction);
-            this.setState({user_id: this.state.user_id});
         });
 
         socket.on("notsell", (data) => {
             this.props.cancelSell(data.notsellInfo);
-            this.setState({user_id: this.state.user_id});
         });
     }
 
@@ -156,16 +148,12 @@ class AdminComponent extends React.Component {
 
     onStartExchangeClick() {
         this.state.socket.emit("start", this.props.settings.interval, this.props.settings.datetimeEnd);
-
         this.props.start();
-        this.setState({forNew: 1});
     }
 
     onEndExchangeClick() {
         this.state.socket.emit("end");
-
         this.props.end();
-        this.setState({forNew: 1});
     }
 
     render() {
